@@ -66,36 +66,36 @@ export default function App() {
 
     // Check college domain restriction
     if (!cleanEmail.endsWith(ALLOWED_DOMAIN.toLowerCase())) {
-      alert(`❌ Access Denied! Fakt official college email (${ALLOWED_DOMAIN}) thi j register/login thai sake.`);
+      alert(`Access Denied: Only official college email addresses (${ALLOWED_DOMAIN}) are authorized to register or log in.`);
       return;
     }
 
     if (authPassword.length < 6) {
-      alert('Password ocha ma ocho 6 characters no hovo joiye.');
+      alert('Password must be at least 6 characters long.');
       return;
     }
 
     setAuthLoading(true);
 
     if (authMode === 'signup') {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: cleanEmail,
         password: authPassword,
       });
 
       if (error) {
-        alert('Signup Error: ' + error.message);
+        alert('Signup Failed: ' + error.message);
       } else {
-        alert('✅ Account successfully banavi gayu! Welcome to Campus Portal.');
+        alert('Account created successfully! Welcome to the Campus Portal.');
       }
     } else {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password: authPassword,
       });
 
       if (error) {
-        alert('Login Error: ' + error.message);
+        alert('Login Failed: ' + error.message);
       }
     }
 
@@ -111,7 +111,7 @@ export default function App() {
     e.preventDefault();
 
     if (!form.secret_pin || form.secret_pin.length < 4) {
-      alert('Krupa kari ne 4-digit no Secret PIN enter karo.');
+      alert('Please enter a valid 4 to 6-digit Secret PIN.');
       return;
     }
 
@@ -128,7 +128,7 @@ export default function App() {
         });
 
       if (uploadError) {
-        alert('Image Upload Error: ' + uploadError.message);
+        alert('Image Upload Failed: ' + uploadError.message);
         setLoading(false);
         return;
       }
@@ -145,7 +145,7 @@ export default function App() {
     ]);
 
     if (!insertError) {
-      alert('Report published successfully! Tamaro PIN yaad rakhjo claim karva mate.');
+      alert('Report published successfully! Please remember your Secret PIN to manage or claim this item.');
       setForm({
         title: '',
         category: 'Electronics',
@@ -160,7 +160,7 @@ export default function App() {
       if (fileInput) fileInput.value = '';
       fetchItems();
     } else {
-      alert('Database Error: ' + insertError.message);
+      alert('Database Insert Error: ' + insertError.message);
     }
     setLoading(false);
   };
@@ -169,13 +169,13 @@ export default function App() {
     const actualPin = item.secret_pin ? String(item.secret_pin).trim() : '1234';
 
     const userEnteredPin = window.prompt(
-      `Aa item ne ${item.is_resolved ? 'Reopen' : 'Claimed'} mark karva mate 4-digit Secret PIN enter karo:`
+      `Enter the Secret PIN to mark this item as ${item.is_resolved ? 'Reopened' : 'Claimed'}:`
     );
 
     if (userEnteredPin === null) return;
 
     if (userEnteredPin.trim() !== actualPin) {
-      alert('❌ Galat PIN! Fakt jene aa report banavi chhe te j claim kari sake.');
+      alert('Invalid PIN! Only the author who reported this item can update its status.');
       return;
     }
 
@@ -187,11 +187,11 @@ export default function App() {
       .eq('id', item.id);
 
     if (error) {
-      alert('Status update error: ' + error.message);
+      alert('Status Update Failed: ' + error.message);
       return;
     }
 
-    alert(`✅ Item successfully ${newStatus ? 'Claimed' : 'Reopened'} thai gai!`);
+    alert(`Item successfully marked as ${newStatus ? 'Claimed' : 'Reopened'}!`);
     await fetchItems();
   };
 
@@ -199,7 +199,7 @@ export default function App() {
     const cleanNumber = item.contact_info.replace(/[^0-9]/g, '');
     const phone = cleanNumber.length === 10 ? `91${cleanNumber}` : cleanNumber;
     const message = encodeURIComponent(
-      `Hello! I saw your ${item.type} notice for "${item.title}" on the Lost & Found Portal.`
+      `Hello! I am reaching out regarding the ${item.type} report for "${item.title}" posted on the Campus Lost & Found Portal.`
     );
     window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
   };
@@ -231,7 +231,7 @@ export default function App() {
             <div className="brand-logo">🎓</div>
             <h2>Campus Lost &amp; Found Portal</h2>
             <p>Student Verification Required</p>
-            <div className="domain-pill">Only {ALLOWED_DOMAIN} accounts allowed</div>
+            <div className="domain-pill">Authorized for {ALLOWED_DOMAIN} accounts</div>
           </div>
 
           <div className="auth-toggle-tabs">
@@ -253,7 +253,7 @@ export default function App() {
 
           <form onSubmit={handleAuth} className="auth-form">
             <div className="form-group">
-              <label>College Email ID</label>
+              <label>College Email Address</label>
               <input
                 type="email"
                 className="form-control"
@@ -269,7 +269,7 @@ export default function App() {
               <input
                 type="password"
                 className="form-control"
-                placeholder="At least 6 characters"
+                placeholder="Minimum 6 characters"
                 value={authPassword}
                 onChange={(e) => setAuthPassword(e.target.value)}
                 required
@@ -278,10 +278,10 @@ export default function App() {
 
             <button type="submit" className="btn-submit-glow" disabled={authLoading}>
               {authLoading
-                ? 'Verifying...'
+                ? 'Authenticating...'
                 : authMode === 'login'
-                ? 'Enter Campus Portal 🚀'
-                : 'Create Student Account 🎓'}
+                ? 'Sign In to Portal 🚀'
+                : 'Create Account 🎓'}
             </button>
           </form>
         </div>
@@ -312,7 +312,7 @@ export default function App() {
           </div>
 
           <button className="btn-logout" onClick={handleLogout} title="Sign Out">
-            Logout ↪
+            Sign Out ↪
           </button>
         </div>
       </header>
@@ -321,7 +321,7 @@ export default function App() {
         {/* Left Form */}
         <section className="form-card">
           <div className="form-top-title">
-            <h2>📢 Create a Notice</h2>
+            <h2>📢 Report an Item</h2>
           </div>
           <form onSubmit={handleSubmit} className="form-grid-inner">
             <div className="form-row">
@@ -359,7 +359,7 @@ export default function App() {
               <input
                 type="text"
                 className="form-control"
-                placeholder="e.g. Blue Titan Watch, College ID Card"
+                placeholder="e.g. Titan Watch, College ID Card"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 required
@@ -372,7 +372,7 @@ export default function App() {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="e.g. Lab 212, Canteen"
+                  placeholder="e.g. Lab 212, Cafeteria"
                   value={form.location}
                   onChange={(e) => setForm({ ...form, location: e.target.value })}
                   required
@@ -384,7 +384,7 @@ export default function App() {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="10-digit WhatsApp/Phone"
+                  placeholder="10-digit WhatsApp or Phone"
                   value={form.contact_info}
                   onChange={(e) => setForm({ ...form, contact_info: e.target.value })}
                   required
@@ -393,12 +393,12 @@ export default function App() {
             </div>
 
             <div className="form-group">
-              <label>Secret PIN (Claim Security)</label>
+              <label>Secret PIN (Claim Verification)</label>
               <input
                 type="password"
                 maxLength="6"
                 className="form-control"
-                placeholder="Set 4-digit PIN (e.g. 1234)"
+                placeholder="Set 4 to 6-digit PIN (e.g. 1234)"
                 value={form.secret_pin}
                 onChange={(e) => setForm({ ...form, secret_pin: e.target.value })}
                 required
@@ -409,7 +409,7 @@ export default function App() {
               <label>Description</label>
               <textarea
                 className="form-control"
-                placeholder="Distinct marks, color, unique stickers..."
+                placeholder="Distinct marks, color, unique stickers or details..."
                 rows="2"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -428,7 +428,7 @@ export default function App() {
             </div>
 
             <button type="submit" className="btn-submit-glow" disabled={loading}>
-              {loading ? 'Publishing...' : 'Submit Report 🚀'}
+              {loading ? 'Submitting Report...' : 'Publish Notice 🚀'}
             </button>
           </form>
         </section>
@@ -440,7 +440,7 @@ export default function App() {
               <span className="search-icon-svg">🔍</span>
               <input
                 type="text"
-                placeholder="Instant search by item title, department, or keyword..."
+                placeholder="Search items by name, department, or keywords..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -523,7 +523,7 @@ export default function App() {
                     </div>
                   ) : (
                     <div className="no-media-box">
-                      <span>📷</span> No Image Attached
+                      <span>📷</span> No Photo Attached
                       {item.is_resolved && (
                         <span className="floating-badge badge-claimed-glow">✓ CLAIMED</span>
                       )}
@@ -536,7 +536,7 @@ export default function App() {
                       <button
                         className={`btn-claim-toggle ${item.is_resolved ? 'is-claimed' : ''}`}
                         onClick={() => toggleResolved(item)}
-                        title="PIN verify karine claim status change karo"
+                        title="Verify PIN to update claim status"
                       >
                         {item.is_resolved ? '✓ Claimed (Locked)' : '🔒 Mark Claimed'}
                       </button>
@@ -547,7 +547,7 @@ export default function App() {
                     </h3>
                     <div className="card-loc">📍 {item.location}</div>
                     <p className="card-desc-modern">
-                      {item.description || 'No additional details.'}
+                      {item.description || 'No additional details provided.'}
                     </p>
 
                     <div className="card-action-row">
