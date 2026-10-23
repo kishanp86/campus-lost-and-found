@@ -743,3 +743,101 @@
   background: #fef2f2;
   border-color: #fca5a5;
 }
+/* ===================================================
+   MOBILE & TABLET RESPONSIVE STYLES (Screen < 768px)
+   =================================================== */
+
+@media screen and (max-width: 768px) {
+  /* 1. Main Wrapper Padding Adjust */
+  .app-wrapper {
+    padding: 12px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* 2. Header Adjustments */
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .header-right-auth {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .user-profile-badge {
+    max-width: 70%;
+  }
+
+  .user-email-text {
+    max-width: 130px;
+  }
+
+  /* 3. Main Grid: 2 Columns mathi 1 Column ma convert */
+  .content-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px;
+  }
+
+  /* 4. Left Form Section Full Width */
+  .form-card {
+    width: 100% !important;
+    padding: 16px;
+  }
+
+  .form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* 5. Right Feed Section Full Width */
+  .feed-section {
+    width: 100% !important;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .tab-pills {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab-pills button {
+    flex: 1;
+    font-size: 0.78rem;
+    padding: 6px 10px;
+  }
+
+  .category-dropdown {
+    width: 100%;
+  }
+
+  /* 6. Feed Cards Grid Adjust */
+  .cards-list {
+    grid-template-columns: 1fr !important; /* Mobile ma 1 card per row */
+    gap: 14px;
+  }
+
+  /* 7. Auth Screen Card Adjust */
+  .auth-card {
+    padding: 24px 18px;
+    margin: 12px;
+  }
+
+  /* 8. Image Modal Mobile View */
+  .modal-content {
+    width: 95%;
+    max-height: 80vh;
+  }
+}
