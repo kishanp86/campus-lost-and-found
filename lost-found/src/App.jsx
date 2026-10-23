@@ -58,7 +58,7 @@ export default function App() {
     }
   }, [session]);
 
-  // Auth Handler: Login / Signup with Domain Restriction
+  // Auth Handler: Login / Signup with Domain Restriction & Email Confirmation
   const handleAuth = async (e) => {
     e.preventDefault();
 
@@ -78,13 +78,21 @@ export default function App() {
     setAuthLoading(true);
 
     if (authMode === 'signup') {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
         password: authPassword,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
       });
 
       if (error) {
         alert('Signup Failed: ' + error.message);
+      } else if (data?.user && !data?.session) {
+        // Email confirmation mandatory hoy tyare session null aavshe
+        alert('Verification email sent! Please check your college inbox and confirm your email before signing in.');
+        setAuthMode('login');
+        setAuthPassword('');
       } else {
         alert('Account created successfully! Welcome to the Campus Portal.');
       }
@@ -95,7 +103,11 @@ export default function App() {
       });
 
       if (error) {
-        alert('Login Failed: ' + error.message);
+        if (error.message.toLowerCase().includes('email not confirmed')) {
+          alert('Email not confirmed! Please check your inbox and verify your email before logging in.');
+        } else {
+          alert('Login Failed: ' + error.message);
+        }
       }
     }
 
